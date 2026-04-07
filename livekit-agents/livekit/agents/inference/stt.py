@@ -662,15 +662,13 @@ class SpeechStream(stt.SpeechStream):
             start_event = stt.SpeechEvent(type=stt.SpeechEventType.START_OF_SPEECH)
             self._event_ch.send_nowait(start_event)
 
-        raw_speaker_id = data.get("speaker_id")
-
         speech_data = stt.SpeechData(
             language=language,
             start_time=self.start_time_offset + data.get("start", 0),
             end_time=self.start_time_offset + data.get("start", 0) + data.get("duration", 0),
             confidence=data.get("confidence", 1.0),
             text=text,
-            speaker_id=str(raw_speaker_id) if raw_speaker_id is not None else None,
+            speaker_id=data.get("speaker_id"),
             words=[
                 TimedString(
                     text=word.get("word", ""),
@@ -678,7 +676,7 @@ class SpeechStream(stt.SpeechStream):
                     end_time=word.get("end", 0) + self.start_time_offset,
                     start_time_offset=self.start_time_offset,
                     confidence=word.get("confidence", 0.0),
-                    speaker_id=str(word.get("speaker_id")) if word.get("speaker_id") is not None else None,
+                    speaker_id=word.get("speaker_id"),
                 )
                 for word in words
             ],
